@@ -83,6 +83,7 @@ class Ui_MainWindow(object):
         # here is the setting by myself
         self.textEdit.setReadOnly(True)
         self.textEdit_3.setReadOnly(True)
+        # --------------------------------
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):

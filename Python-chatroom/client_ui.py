@@ -85,7 +85,7 @@ class Ui_MainWindow(object):
         self.textEdit.setReadOnly(True)
         self.textEdit_3.setReadOnly(True)
         self.pushButton.clicked.connect(self.send_packet)
-
+        # --------------------------------
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):
