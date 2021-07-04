@@ -1,4 +1,5 @@
 # Python-gui
 
 ## The files in here is the practice about Pyqt5
-This the preparation before I start my chatroom project.
+
+## And also these is a chatroom_project in here 
