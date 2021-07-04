@@ -20,8 +20,7 @@ def recv():         # recv() 加開一個執行緒，負責將收到的訊息打
                 break
             send_addr+=text   
         data=raw_data.replace(send_addr+"\n","")
-        print(f"[*] from {send_addr}:")
-        print(f"{data}")
+        print(f"[*] from {send_addr}: {data}")
         send_addr=""
         
 client=socket.socket(socket.AF_INET,socket.SOCK_STREAM)
@@ -29,7 +28,7 @@ client.connect(addrs)
 recv_thread=threading.Thread(target=recv)
 recv_thread.start()
 while True:  # 負責轉傳訊息
-    msg=input("Msg:")
+    msg=input('')
     hostname=socket.gethostname()
     local_addr=socket.gethostbyname(hostname)
     msg=(local_addr+'\n'+msg).encode("utf-8") # '\n'換行字元區隔出IP跟訊息，還有編碼

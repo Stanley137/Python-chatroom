@@ -107,14 +107,14 @@ class Ui_MainWindow(object):
         self.actionquit.setShortcut(_translate("MainWindow", "Ctrl+W"))
 
     @classmethod
-    def send_packet(self): # 負責傳訊息
-        msg=self.textEdit_2.toPlainText()
+    def send_packet(cls): # 負責傳訊息
+        msg=cls.textEdit_2.toPlainText()
         hostname = socket.gethostname()
         local_addr = socket.gethostbyname(hostname)
         msg = (local_addr + '\n' + msg).encode("utf-8")  # '\n'換行字元區隔出IP跟訊息，還有編碼
         client.send(msg)
 
-    def recv(self):  # recv() 加開一個執行緒，負責將收到的訊息打印出來
+    def recv(cls):  # recv() 加開一個執行緒，負責將收到的訊息打印出來
         global send_addr
         global data
         while True:
@@ -126,8 +126,8 @@ class Ui_MainWindow(object):
             data = raw_data.replace(send_addr + "\n", "")
             print(f"[*] from {send_addr}:")
             print(f"{data}")
-            self.textEdit.append(f"[*] from {send_addr}:\n")
-            self.textEdit.append(f"{data}\n")
+            cls.textEdit.append(f"[*] from {send_addr}:\n")
+            cls.textEdit.append(f"{data}\n")
             send_addr = ""
 
 addrs=("127.0.0.1",8080)
@@ -146,7 +146,7 @@ if __name__ == "__main__":
     # socket connect
     client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     client.connect(addrs)
-    recv_thread = threading.Thread(target=Ui_MainWindow.recv())
+    recv_thread = threading.Thread(target=Ui_MainWindow.recv)
     recv_thread.start()
     #close the windows
     sys.exit(app.exec_())
