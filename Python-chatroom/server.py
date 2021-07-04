@@ -16,8 +16,7 @@ class client_handler(threading.Thread):
     def run(self):
         while True:
             msg=self.client.recv(1024) #每個執行緒有自己的讀寫緩衝區
-            print(f"[*]{self.addrs} send:")
-            print(msg.decode("utf-8"))
+            print(f'[*] {self.addrs}: {msg.decode("utf-8")}')
             send.acquire()  #鎖住
             self.write_client(self.client,msg)    #防止順序混亂
             send.release()  #釋放
@@ -34,8 +33,10 @@ thread_lists=[]
 server=socket.socket(socket.AF_INET,socket.SOCK_STREAM)
 server.bind(addrs)
 server.listen(5) #監聽連結最多5人
+
 while(True):
     client,addrs=server.accept()
+    print(f"[*] {addrs} connected!")
     client_lists.append(client) 
     thread=client_handler(client,addrs)
     thread.start()
