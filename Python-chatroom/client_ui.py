@@ -9,7 +9,7 @@
 
 
 from PyQt5 import QtCore, QtGui, QtWidgets
-import os
+from PyQt5.QtGui import QFont
 import socket
 import sys
 import threading
@@ -18,6 +18,7 @@ import time
 
 class Ui_MainWindow(object):
     local_addr = ""
+
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(850, 600)
@@ -87,7 +88,10 @@ class Ui_MainWindow(object):
         self.tabWidget_2.setCurrentIndex(0)
         self.toolBox.setCurrentIndex(0)
 
-        # here is the setting by myself
+        # here is the setting append latter
+        self.textEdit.setFont(QFont('Times', 16))
+        self.textEdit_2.setFont(QFont('Times', 15))
+        self.textEdit_3.setFont(QFont('Times', 14))
         self.textEdit.setReadOnly(True)
         self.textEdit_3.setReadOnly(True)
         self.pushButton.clicked.connect(self.send_packet)
@@ -117,15 +121,15 @@ class Ui_MainWindow(object):
     def send_packet(self): # 負責傳訊息
         msg=self.textEdit_2.toPlainText()
         self.textEdit_2.setText("")
-        if "quit()" not in msg:
-            self.textEdit.append(f"[*]from you send:{msg}")
+        if "!!QUIT" not in msg:
+            self.textEdit.append(f"[*]from you send:\n{msg}")  # The end of msg has "\n"
             msg = (self.local_addr + flags[0] + msg).encode("utf-8")  # '\b'換行字元區隔出IP跟訊息，還有編碼
             client.send(msg)
         else:
             msg = (self.local_addr + flags[1] + msg).encode("utf-8")  # '\0'字元代表結束傳訊
             client.send(msg)
             client.close()
-            print("Have a nice Day(~~")
+            self.textEdit_2.setText("Have a nice Day(~~")
             time.sleep(1)
             sys.exit()
 
@@ -140,7 +144,7 @@ class Ui_MainWindow(object):
                         break
                     send_addr += text
                 data = raw_data.replace(send_addr + "\b", "")
-                data=f"[*] from {send_addr} send:{data}\n"
+                data=f"[*] from {send_addr} send:\n{data}"  # The end of data has "\n"
                 self.textEdit.append(data)
                 send_addr = ""
             else:
@@ -148,13 +152,13 @@ class Ui_MainWindow(object):
 
     def save(self):
         with open("save.txt","a+") as file:
-            file.write(self.textEdit.toPlainText()+"\n")
+            file.write("\n"+self.textEdit.toPlainText())
             file.close()
 
     def quit(self):
         client.send(flags[1].encode("utf-8"))
         client.close()
-        print("Have a nice Day(~~")
+        self.textEdit_2.setText("Have a nice Day(~~")
         time.sleep(1)
         sys.exit()
 
