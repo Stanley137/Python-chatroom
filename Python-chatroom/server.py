@@ -18,7 +18,7 @@ class client_handler(threading.Thread):
             decoded_msg=msg.decode("utf-8")
             if flag[1] not in decoded_msg:
                 decoded_msg=decoded_msg.replace(flag[0],"")
-                print(f'[*] {self.addrs}: {decoded_msg}')
+                print(f'[*] {self.addrs}:\n{decoded_msg}')
                 send.acquire()  #鎖住
                 self.write_client(self.client,msg)    #防止順序混亂
                 send.release()  #釋放
