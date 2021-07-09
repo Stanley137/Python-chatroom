@@ -11,12 +11,11 @@ import sys
 import time
 
 addrs=("127.0.0.1",8080)
-send_addr=""
 flags=["\b", "\0"]
 
-def recv():         # recv() 加開一個執行緒，負責將收到的訊息打印出來     
-    global send_addr
+def recv():         # recv() 加開一個執行緒，負責將收到的訊息打印出來
     global flags
+    send_addr=""
     while True:
         raw_data=client.recv(1024).decode("utf-8")
         if raw_data:
@@ -42,7 +41,7 @@ while True:  # 負責轉傳訊息
         msg=(local_addr + flags[0] + msg).encode("utf-8") # '\b'換行字元區隔出IP跟訊息，還有編碼
         client.send(msg)
     else:
-        msg = (local_addr + flags[1] + msg).encode("utf-8") #'\a'字元代表結束傳訊
+        msg = (local_addr + flags[1] + msg).encode("utf-8") #'\0'字元代表結束傳訊
         client.send(msg)
         client.close()
         print("Have a nice Day(~~")

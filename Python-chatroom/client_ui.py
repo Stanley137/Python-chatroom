@@ -9,9 +9,14 @@
 
 
 from PyQt5 import QtCore, QtGui, QtWidgets
+import socket
+import sys
+import threading
+import time
 
 
 class Ui_MainWindow(object):
+    local_addr = ""
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(850, 600)
@@ -106,41 +111,43 @@ class Ui_MainWindow(object):
         self.actionquit.setStatusTip(_translate("MainWindow", "Ctrl+W"))
         self.actionquit.setShortcut(_translate("MainWindow", "Ctrl+W"))
 
-    @classmethod
-    def send_packet(cls): # 負責傳訊息
-        msg=cls.textEdit_2.toPlainText()
-        hostname = socket.gethostname()
-        local_addr = socket.gethostbyname(hostname)
-        msg = (local_addr + '\n' + msg).encode("utf-8")  # '\n'換行字元區隔出IP跟訊息，還有編碼
-        client.send(msg)
+    def send_packet(self): # 負責傳訊息
+        msg=self.textEdit_2.toPlainText()
+        if "quit()" not in msg:
+            msg = (self.local_addr + flags[0] + msg).encode("utf-8")  # '\b'換行字元區隔出IP跟訊息，還有編碼
+            client.send(msg)
+        else:
+            msg = (self.local_addr + flags[1] + msg).encode("utf-8")  # '\0'字元代表結束傳訊
+            client.send(msg)
+            client.close()
+            print("Have a nice Day(~~")
+            time.sleep(1)
+            sys.exit()
 
-    def recv(cls):  # recv() 加開一個執行緒，負責將收到的訊息打印出來
-        global send_addr
-        global data
+    def recv(self):  # recv() 加開一個執行緒，負責將收到的訊息打印出來
+        global flags
+        send_addr = ""
         while True:
-            raw_data = client.recv(4096).decode("utf-8")
-            for text in raw_data:
-                if text == "\n":
-                    break
-                send_addr += text
-            data = raw_data.replace(send_addr + "\n", "")
-            print(f"[*] from {send_addr}:")
-            print(f"{data}")
-            cls.textEdit.append(f"[*] from {send_addr}:\n")
-            cls.textEdit.append(f"{data}\n")
-            send_addr = ""
+            raw_data = client.recv(1024).decode("utf-8")
+            if raw_data:
+                for text in raw_data:
+                    if text in flags:
+                        break
+                    send_addr += text
+                data = raw_data.replace(send_addr + "\b", "")
+                print(f"[*] from {send_addr}:{data}")
+                send_addr = ""
+            else:
+                break
 
 addrs=("127.0.0.1",8080)
-send_addr=""
-data=""
+flags=["\b", "\0"]
 
 if __name__ == "__main__":
-    import sys
-    import socket
-    import threading
     app = QtWidgets.QApplication(sys.argv)
     MainWindow = QtWidgets.QMainWindow()
     ui = Ui_MainWindow()
+    ui.local_addr=socket.gethostbyname(socket.gethostname())
     ui.setupUi(MainWindow)
     MainWindow.show()
     # socket connect
