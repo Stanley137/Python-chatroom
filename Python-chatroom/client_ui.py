@@ -9,6 +9,7 @@
 
 
 from PyQt5 import QtCore, QtGui, QtWidgets
+import os
 import socket
 import sys
 import threading
@@ -90,6 +91,8 @@ class Ui_MainWindow(object):
         self.textEdit.setReadOnly(True)
         self.textEdit_3.setReadOnly(True)
         self.pushButton.clicked.connect(self.send_packet)
+        self.actionquit.triggered.connect(self.quit)
+        self.actionsave_message.triggered.connect(self.save)
         # --------------------------------
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
@@ -113,7 +116,9 @@ class Ui_MainWindow(object):
 
     def send_packet(self): # 負責傳訊息
         msg=self.textEdit_2.toPlainText()
+        self.textEdit_2.setText("")
         if "quit()" not in msg:
+            self.textEdit.append(f"[*]from you send:{msg}")
             msg = (self.local_addr + flags[0] + msg).encode("utf-8")  # '\b'換行字元區隔出IP跟訊息，還有編碼
             client.send(msg)
         else:
@@ -135,10 +140,23 @@ class Ui_MainWindow(object):
                         break
                     send_addr += text
                 data = raw_data.replace(send_addr + "\b", "")
-                print(f"[*] from {send_addr}:{data}")
+                data=f"[*] from {send_addr} send:{data}\n"
+                self.textEdit.append(data)
                 send_addr = ""
             else:
                 break
+
+    def save(self):
+        with open("save.txt","a+") as file:
+            file.write(self.textEdit.toPlainText()+"\n")
+            file.close()
+
+    def quit(self):
+        client.send(flags[1].encode("utf-8"))
+        client.close()
+        print("Have a nice Day(~~")
+        time.sleep(1)
+        sys.exit()
 
 addrs=("127.0.0.1",8080)
 flags=["\b", "\0"]
@@ -153,7 +171,7 @@ if __name__ == "__main__":
     # socket connect
     client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     client.connect(addrs)
-    recv_thread = threading.Thread(target=Ui_MainWindow.recv)
+    recv_thread = threading.Thread(target=ui.recv)
     recv_thread.start()
     #close the windows
     sys.exit(app.exec_())
