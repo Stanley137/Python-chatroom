@@ -22,7 +22,6 @@ class Ui_MainWindow(object):
     local_addr=""
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
-        MainWindow.setWindowTitle("Chatroom")
         MainWindow.resize(850, 600)
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
