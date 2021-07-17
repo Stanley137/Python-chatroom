@@ -128,16 +128,11 @@ class Ui_MainWindow(object):
             msg = (self.local_addr + flags[0] + msg).encode("utf-8")  # separate the addrs and msg with '\b' ,
             client.send(msg)                                          # and '\b' means keep connecting
         else:
-            msg = (self.local_addr + flags[1] + msg).encode("utf-8")  # separate the addrs and msg with '\0'
-            client.send(msg)                                          # and '\0' means disconnecting
-            client.close()
-            self.textEdit.setText("Have a nice Day(~~")
-            QMessageBox.about(MainWindow, "Shut down", "Have a nice day(~~")
-            time.sleep(1)
-            sys.exit()
+            self.quit() # separate the addrs and msg with '\0', and '\0' means disconnecting
 
     def recv(self):  # recv() open a new thread, and display the msg
         global flags
+        addr_lists=[]
         send_addr = ""
         while True:
             raw_data = client.recv(1024).decode("utf-8")
@@ -146,6 +141,9 @@ class Ui_MainWindow(object):
                     if text in flags:
                         break
                     send_addr += text
+                if send_addr not in addr_lists:
+                    addr_lists.append(send_addr)
+                    self.textEdit_3.append(f"IP{addr_lists.index(send_addr)}:{send_addr}")
                 data = raw_data.replace(send_addr + "\b", "")
                 data=f"[*] from {send_addr} send:\n{data}"  # The end of data has "\n"
                 self.textEdit.append(data)
