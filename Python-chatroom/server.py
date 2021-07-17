@@ -14,33 +14,33 @@ class client_handler(threading.Thread):
         threading.Thread.__init__(self)
     def run(self):
         while True:
-            msg=self.client.recv(1024) #每個執行緒有自己的讀寫緩衝區
+            msg=self.client.recv(1024) # every thread has it own buffer for reading
             decoded_msg=msg.decode("utf-8")
             if flag[1] not in decoded_msg:
                 decoded_msg=decoded_msg.replace(flag[0],"")
                 print(f'[*] {self.addrs}:\n{decoded_msg}')
-                send.acquire()  #鎖住
-                self.write_client(self.client,msg)    #防止順序混亂
-                send.release()  #釋放
+                send.acquire()  # lock
+                self.write_client(self.client,msg)    # prevent from the error of the msg's sequence
+                send.release()  # unlock
             else:
                 print(f"[!] {self.addrs} disconnected!!")
                 break
         self.client.close()
         client_lists.remove(self.client)
     @staticmethod
-    def write_client(client_send,msg): #將訊息轉傳至其他客戶端
-        for client in client_lists: #廣播
+    def write_client(client_send,msg): # Repost the msg from the client
+        for client in client_lists: # boardcast
             if client_send != client:
                 client.send(msg)
         
-send=threading.Lock() #執行緒鎖
+send=threading.Lock()
 addrs=("0.0.0.0",8080)
 flag=["\b","\0"]
 client_lists=[]
 # handler_lists=[]
 server=socket.socket(socket.AF_INET,socket.SOCK_STREAM)
 server.bind(addrs)
-server.listen(5) #監聽連結最多5人
+server.listen(5) # the client limits=5
 
 while(True):
     client,addrs=server.accept()

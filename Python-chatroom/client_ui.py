@@ -9,7 +9,9 @@
 
 
 from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt5.QtWidgets import QMessageBox
 from PyQt5.QtGui import QFont
+from PyQt5.QtGui import QCursor
 import socket
 import sys
 import threading
@@ -17,8 +19,7 @@ import time
 
 
 class Ui_MainWindow(object):
-    local_addr = ""
-
+    local_addr=""
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(850, 600)
@@ -89,8 +90,10 @@ class Ui_MainWindow(object):
         self.toolBox.setCurrentIndex(0)
 
         # here is the setting append latter
-        self.textEdit.setFont(QFont('Times', 16))
-        self.textEdit_2.setFont(QFont('Times', 15))
+        MainWindow.setFixedWidth(850)  # lock the window's size
+        MainWindow.setFixedHeight(600)
+        self.textEdit.setFont(QFont('Times', 16)) # set the text font
+        self.textEdit_2.setFont(QFont('Times', 14))
         self.textEdit_3.setFont(QFont('Times', 14))
         self.textEdit.setReadOnly(True)
         self.textEdit_3.setReadOnly(True)
@@ -123,18 +126,14 @@ class Ui_MainWindow(object):
         self.textEdit_2.setText("")
         if "!!QUIT" not in msg:
             self.textEdit.append(f"[*]from you send:\n{msg}")  # The end of msg has "\n"
-            msg = (self.local_addr + flags[0] + msg).encode("utf-8")  # '\b'換行字元區隔出IP跟訊息，還有編碼
-            client.send(msg)
+            msg = (self.local_addr + flags[0] + msg).encode("utf-8")  # separate the addrs and msg with '\b' ,
+            client.send(msg)                                          # and '\b' means keep connecting
         else:
-            msg = (self.local_addr + flags[1] + msg).encode("utf-8")  # '\0'字元代表結束傳訊
-            client.send(msg)
-            client.close()
-            self.textEdit_2.setText("Have a nice Day(~~")
-            time.sleep(1)
-            sys.exit()
+            self.quit() # separate the addrs and msg with '\0', and '\0' means disconnecting
 
-    def recv(self):  # recv() 加開一個執行緒，負責將收到的訊息打印出來
+    def recv(self):  # recv() open a new thread, and display the msg
         global flags
+        addr_lists=[]
         send_addr = ""
         while True:
             raw_data = client.recv(1024).decode("utf-8")
@@ -143,6 +142,9 @@ class Ui_MainWindow(object):
                     if text in flags:
                         break
                     send_addr += text
+                if send_addr not in addr_lists:
+                    addr_lists.append(send_addr)
+                    self.textEdit_3.append(f"IP{addr_lists.index(send_addr)}:{send_addr}")
                 data = raw_data.replace(send_addr + "\b", "")
                 data=f"[*] from {send_addr} send:\n{data}"  # The end of data has "\n"
                 self.textEdit.append(data)
@@ -158,16 +160,23 @@ class Ui_MainWindow(object):
     def quit(self):
         client.send(flags[1].encode("utf-8"))
         client.close()
-        self.textEdit_2.setText("Have a nice Day(~~")
+        self.textEdit.setText("Have a nice Day(~~")
+        QMessageBox.about(MainWindow, "Shut down", "Have a nice day(~~")
         time.sleep(1)
         sys.exit()
 
+class Window(QtWidgets.QMainWindow):
+    def __init__(self):
+        QtWidgets.QMainWindow.__init__(self)
+    def closeEvent(self, a0: QtGui.QCloseEvent) -> None:
+        ui.quit()
+
 addrs=("127.0.0.1",8080)
-flags=["\b", "\0"]
+flags=['\b','\0']
 
 if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)
-    MainWindow = QtWidgets.QMainWindow()
+    MainWindow = Window()
     ui = Ui_MainWindow()
     ui.local_addr=socket.gethostbyname(socket.gethostname())
     ui.setupUi(MainWindow)
