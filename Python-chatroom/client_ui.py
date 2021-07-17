@@ -9,6 +9,7 @@
 
 
 from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt5.QtWidgets import QMessageBox
 from PyQt5.QtGui import QFont
 import socket
 import sys
@@ -130,7 +131,8 @@ class Ui_MainWindow(object):
             msg = (self.local_addr + flags[1] + msg).encode("utf-8")  # separate the addrs and msg with '\0'
             client.send(msg)                                          # and '\0' means disconnecting
             client.close()
-            self.textEdit_2.setText("Have a nice Day(~~")
+            self.textEdit.setText("Have a nice Day(~~")
+            QMessageBox.about(MainWindow, "Shut down", "Have a nice day(~~")
             time.sleep(1)
             sys.exit()
 
@@ -159,11 +161,13 @@ class Ui_MainWindow(object):
     def quit(self):
         client.send(flags[1].encode("utf-8"))
         client.close()
-        self.textEdit_2.setText("Have a nice Day(~~")
+        self.textEdit.setText("Have a nice Day(~~")
+        QMessageBox.about(MainWindow,"Shut down","Have a nice day(~~")
         time.sleep(1)
         sys.exit()
 
 addrs=("127.0.0.1",8080)
+flags=['\b','\0']
 
 if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)
