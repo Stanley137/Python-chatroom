@@ -11,6 +11,7 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtWidgets import QMessageBox
 from PyQt5.QtGui import QFont
+from PyQt5.QtGui import QCursor
 import socket
 import sys
 import threading
@@ -160,16 +161,22 @@ class Ui_MainWindow(object):
         client.send(flags[1].encode("utf-8"))
         client.close()
         self.textEdit.setText("Have a nice Day(~~")
-        QMessageBox.about(MainWindow,"Shut down","Have a nice day(~~")
+        QMessageBox.about(MainWindow, "Shut down", "Have a nice day(~~")
         time.sleep(1)
         sys.exit()
+
+class Window(QtWidgets.QMainWindow):
+    def __init__(self):
+        QtWidgets.QMainWindow.__init__(self)
+    def closeEvent(self, a0: QtGui.QCloseEvent) -> None:
+        ui.quit()
 
 addrs=("127.0.0.1",8080)
 flags=['\b','\0']
 
 if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)
-    MainWindow = QtWidgets.QMainWindow()
+    MainWindow = Window()
     ui = Ui_MainWindow()
     ui.local_addr=socket.gethostbyname(socket.gethostname())
     ui.setupUi(MainWindow)
