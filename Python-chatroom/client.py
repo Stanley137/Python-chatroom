@@ -1,4 +1,4 @@
-import client_ui
+import client_ui2 as client_ui  # Can modify the file name
 import time
 import socket
 import threading
@@ -22,14 +22,15 @@ class Chat_MainWindow(client_ui.Ui_MainWindow):
     def setupUi(self,MainWindow):
         super().setupUi(MainWindow) # Is quite bit faster than super(Chat_MainWindow,self).setupUi()
         # here is the setting append latter
-        MainWindow.setFixedWidth(850)  # lock the window's size
-        MainWindow.setFixedHeight(600)
+        #MainWindow.setFixedWidth(850)  # lock the window's size
+        #MainWindow.setFixedHeight(600)
         self.textEdit.setFont(QFont('Times', 16))  # set the text font
         self.textEdit_2.setFont(QFont('Times', 14))
         self.textEdit_3.setFont(QFont('Times', 14))
         self.textEdit.setReadOnly(True)
         self.textEdit_3.setReadOnly(True)
         self.pushButton.clicked.connect(self.send_packet)
+        self.actionsend.triggered.connect(self.send_packet)
         self.actionquit.triggered.connect(self.quit)
         self.actionsave_message.triggered.connect(self.save)
         # --------------------------------
