@@ -1,4 +1,4 @@
-import client_ui2 as client_ui  # Can modify the file name
+import client_ui  # Can modify the file name
 import time
 import socket
 import threading
@@ -30,6 +30,14 @@ class Chat_MainWindow(client_ui.Ui_MainWindow):
         self.textEdit.setReadOnly(True)
         self.textEdit_3.setReadOnly(True)
         self.pushButton.clicked.connect(self.send_packet)
+        self.pushButton_2.clicked.connect(lambda : self.get_emoji(self.pushButton_2))
+        self.pushButton_3.clicked.connect(lambda : self.get_emoji(self.pushButton_3))
+        self.pushButton_4.clicked.connect(lambda : self.get_emoji(self.pushButton_4))
+        self.pushButton_5.clicked.connect(lambda : self.get_emoji(self.pushButton_5))
+        self.pushButton_6.clicked.connect(lambda : self.get_emoji(self.pushButton_6))
+        self.pushButton_7.clicked.connect(lambda : self.get_emoji(self.pushButton_7))
+        self.pushButton_8.clicked.connect(lambda : self.get_emoji(self.pushButton_8))
+        self.pushButton_9.clicked.connect(lambda : self.get_emoji(self.pushButton_9))
         self.actionsend.triggered.connect(self.send_packet)
         self.actionquit.triggered.connect(self.quit)
         self.actionsave_message.triggered.connect(self.save)
@@ -64,6 +72,7 @@ class Chat_MainWindow(client_ui.Ui_MainWindow):
                 send_addr = ""
             else:
                 break
+
     @staticmethod
     def save(self):
         with open("save.txt", "a+") as file:
@@ -77,6 +86,9 @@ class Chat_MainWindow(client_ui.Ui_MainWindow):
         QMessageBox.about(MainWindow, "Shut down", "Have a nice day(~~")
         time.sleep(1)
         sys.exit()
+
+    def get_emoji(self,button): # The emoji will be added into textedit_2
+        self.textEdit_2.insertPlainText(button.text())
 
 class Window(client_ui.QtWidgets.QMainWindow):
     def __init__(self):
