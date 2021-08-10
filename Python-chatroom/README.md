@@ -1,4 +1,6 @@
-#### The Instruction of chatroom
+#Instruction of chatroom
+
+## Notice!! some IME may not type other languages(except English) in Textedit.
 
 ## As you can see there are total four .py files and one .ui file,
 
