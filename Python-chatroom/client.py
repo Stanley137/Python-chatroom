@@ -73,7 +73,6 @@ class Chat_MainWindow(client_ui.Ui_MainWindow):
             else:
                 break
 
-    @staticmethod
     def save(self):
         with open("save.txt", "a+") as file:
             file.write("\n" + self.textEdit.toPlainText())
